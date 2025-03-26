@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>网址导航</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">网址导航</h1>
+            <p class="text-lg text-gray-600">收集实用网站，提高工作效率</p>
+        </header>
+
+        <!-- Toolbar -->
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-8">
+            <div class="flex flex-wrap gap-4 items-center justify-between">
+                <div class="flex-1 relative">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="搜索网站..."
+                        class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                </div>
+                <div class="flex gap-2">
+                    <button
+                        id="addCategoryBtn"
+                        class="hidden flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        添加分类
+                    </button>
+                    <button
+                        id="bulkAddBtn"
+                        class="hidden flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        批量添加
+                    </button>
+                    <button
+                        id="editModeBtn"
+                        class="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        编辑模式
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div id="categories" class="flex flex-wrap gap-3 mb-8">
+            <button
+                data-category="all"
+                class="px-4 py-2 rounded-full bg-blue-500 text-white transition-colors"
+            >
+                全部
+            </button>
+        </div>
+
+        <!-- Links Grid -->
+        <div id="linksGrid" class="grid gap-8"></div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="addCategoryModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal">
+        <div class="bg-white rounded-lg p-6 w-96">
+            <h3 class="text-xl font-semibold mb-4">添加新分类</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">分类名称</label>
+                    <input type="text" id="newCategoryName" class="w-full px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">表情符号</label>
+                    <input type="text" id="newCategoryEmoji" class="w-full px-3 py-2 border rounded-lg">
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button onclick="closeModal('addCategoryModal')" class="px-4 py-2 text-gray-600 hover:text-gray-800">取消</button>
+                    <button onclick="handleAddCategory()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Add Modal -->
+    <div id="bulkAddModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal">
+        <div class="bg-white rounded-lg p-6 w-96">
+            <h3 class="text-xl font-semibold mb-4">批量添加链接</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">选择分类</label>
+                    <select id="bulkAddCategory" class="w-full px-3 py-2 border rounded-lg"></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">链接列表（每行：名称,网址,描述）</label>
+                    <textarea id="bulkAddLinks" rows="6" class="w-full px-3 py-2 border rounded-lg"></textarea>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button onclick="closeModal('bulkAddModal')" class="px-4 py-2 text-gray-600 hover:text-gray-800">取消</button>
+                    <button onclick="handleBulkAdd()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始数据
+        let categories = {
+            'AI工具': {
+                emoji: '🤖',
+                links: [
+                    { name: 'ChatGPT', url: 'https://chat.openai.com', description: 'AI对话助手' },
+                    { name: 'Claude', url: 'https://claude.ai', description: '智能AI助手' },
+                    { name: 'Midjourney', url: 'https://midjourney.com', description: 'AI图像生成' }
+                ]
+            },
+            '开发工具': {
+                emoji: '💻',
+                links: [
+                    { name: 'GitHub', url: 'https://github.com', description: '代码托管平台' },
+                    { name: 'Stack Overflow', url: 'https://stackoverflow.com', description: '开发者问答社区' },
+                    { name: 'VSCode', url: 'https://code.visualstudio.com', description: '代码编辑器' }
+                ]
+            },
+            '设计资源': {
+                emoji: '🎨',
+                links: [
+                    { name: 'Figma', url: 'https://figma.com', description: '在线设计工具' },
+                    { name: 'Dribbble', url: 'https://dribbble.com', description: '设计灵感社区' },
+                    { name: 'Unsplash', url: 'https://unsplash.com', description: '免费图片资源' }
+                ]
+            }
+        };
+
+        // 状态变量
+        let isEditMode = false;
+        let activeCategory = null;
+        let searchTerm = '';
+
+        // DOM 元素
+        const searchInput = document.getElementById('searchInput');
+        const editModeBtn = document.getElementById('editModeBtn');
+        const addCategoryBtn = document.getElementById('addCategoryBtn');
+        const bulkAddBtn = document.getElementById('bulkAddBtn');
+        const categoriesContainer = document.getElementById('categories');
+        const linksGrid = document.getElementById('linksGrid');
+
+        // 事件监听器
+        searchInput.addEventListener('input', (e) => {
+            searchTerm = e.target.value;
+            renderLinks();
+        });
+
+        editModeBtn.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            editModeBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                ${isEditMode ? '退出编辑' : '编辑模式'}
+            `;
+            addCategoryBtn.style.display = isEditMode ? 'flex' : 'none';
+            bulkAddBtn.style.display = isEditMode ? 'flex' : 'none';
+            renderLinks();
+        });
+
+        // 渲染函数
+        function renderCategories() {
+            const categoryButtons = Object.entries(categories).map(([name, { emoji }]) => `
+                <button
+                    onclick="setActiveCategory('${name}')"
+                    class="px-4 py-2 rounded-full transition-colors ${
+                        activeCategory === name ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }"
+                >
+                    ${emoji} ${name}
+                </button>
+            `).join('');
+
+            categoriesContainer.innerHTML = `
+                <button
+                    onclick="setActiveCategory(null)"
+                    class="px-4 py-2 rounded-full transition-colors ${
+                        !activeCategory ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }"
+                >
+                    全部
+                </button>
+                ${categoryButtons}
+            `;
+        }
+
+        function renderLinks() {
+            const filteredCategories = Object.entries(categories).filter(([name, category]) => {
+                if (activeCategory && activeCategory !== name) return false;
+                
+                if (searchTerm) {
+                    return category.links.some(link => 
+                        link.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        link.description.toLowerCase().includes(searchTerm.toLowerCase())
+                    );
+                }
+                
+                return true;
+            });
+
+            linksGrid.innerHTML = filteredCategories.map(([categoryName, category]) => `
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold flex items-center gap-2">
+                            ${category.emoji} ${categoryName}
+                        </h2>
+                        ${isEditMode ? `
+                            <button
+                                onclick="handleDeleteCategory('${categoryName}')"
+                                class="text-red-500 hover:text-red-700"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        ${category.links.map((link, index) => `
+                            <div class="group relative flex flex-col gap-2 p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                                ${isEditMode ? `
+                                    <div class="flex items-center gap-3">
+                                        <img
+                                            src="${new URL(link.url).origin}/favicon.ico"
+                                            alt=""
+                                            class="w-6 h-6 rounded"
+                                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' fill=\\'none\\' viewBox=\\'0 0 24 24\\' stroke=\\'currentColor\\'%3E%3Cpath stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064\\' /%3E%3C/svg%3E'"
+                                        />
+                                        <input
+                                            type="text"
+                                            value="${link.name}"
+                                            onchange="handleEditLink('${categoryName}', ${index}, 'name', this.value)"
+                                            class="flex-1 bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
+                                        />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value="${link.url}"
+                                        onchange="handleEditLink('${categoryName}', ${index}, 'url', this.value)"
+                                        class="text-sm text-gray-600 bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
+                                    />
+                                    <input
+                                        type="text"
+                                        value="${link.description}"
+                                        onchange="handleEditLink('${categoryName}', ${index}, 'description', this.value)"
+                                        class="text-sm text-gray-600 bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
+                                    />
+                                    <button
+                                        onclick="handleDeleteLink('${categoryName}', ${index})"
+                                        class="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                                    >
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        </svg>
+                                    </button>
+                                ` : `
+                                    <a href="${link.url}" target="_blank" class="flex items-center gap-3">
+                                        <img
+                                            src="${new URL(link.url).origin}/favicon.ico"
+                                            alt=""
+                                            class="w-6 h-6 rounded"
+                                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' fill=\\'none\\' viewBox=\\'0 0 24 24\\' stroke=\\'currentColor\\'%3E%3Cpath stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064\\' /%3E%3C/svg%3E'"
+                                        />
+                                        <span class="font-medium">${link.name}</span>
+                                    </a>
+                                    <a href="${link.url}" target="_blank" class="text-sm text-gray-600 hover:text-blue-500">${link.url}</a>
+                                    <p class="text-sm text-gray-600">${link.description}</p>
+                                `}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 功能函数
+        function setActiveCategory(category) {
+            activeCategory = category;
+            renderCategories();
+            renderLinks();
+        }
+
+        function handleAddCategory() {
+            const name = document.getElementById('newCategoryName').value;
+            const emoji = document.getElementById('newCategoryEmoji').value;
+            
+            if (name && emoji) {
+                categories[name] = {
+                    emoji: emoji,
+                    links: []
+                };
+                closeModal('addCategoryModal');
+                renderCategories();
+                renderLinks();
+            }
+        }
+
+        function handleDeleteCategory(categoryName) {
+            if (confirm(`确定要删除 "${categoryName}" 分类吗？`)) {
+                delete categories[categoryName];
+                if (activeCategory === categoryName) {
+                    activeCategory = null;
+                }
+                renderCategories();
+                renderLinks();
+            }
+        }
+
+        function handleEditLink(categoryName, linkIndex, field, value) {
+            categories[categoryName].links[linkIndex][field] = value;
+        }
+
+        function handleDeleteLink(categoryName, linkIndex) {
+            if (confirm('确定要删除这个网站吗？')) {
+                categories[categoryName].links.splice(linkIndex, 1);
+                renderLinks();
+            }
+        }
+
+        function handleBulkAdd() {
+            const categoryName = document.getElementById('bulkAddCategory').value;
+            const linksText = document.getElementById('bulkAddLinks').value;
+            
+            const newLinks = linksText.split('\n').map(line => {
+                const [name, url, description] = line.split(',').map(s => s.trim());
+                return { name, url, description };
+            }).filter(link => link.name && link.url);
+
+            if (newLinks.length > 0) {
+                categories[categoryName].links.push(...newLinks);
+                closeModal('bulkAddModal');
+                renderLinks();
+            }
+        }
+
+        function showModal(modalId) {
+            if (modalId === 'bulkAddModal') {
+                const select = document.getElementById('bulkAddCategory');
+                select.innerHTML = Object.keys(categories).map(name => 
+                    `<option value="${name}">${name}</option>`
+                ).join('');
+            }
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            if (modalId === 'addCategoryModal') {
+                document.getElementById('newCategoryName').value = '';
+                document.getElementById('newCategoryEmoji').value = '';
+            } else if (modalId === 'bulkAddModal') {
+                document.getElementById('bulkAddLinks').value = '';
+            }
+        }
+
+        // 添加模态框事件监听器
+        addCategoryBtn.addEventListener('click', () => showModal('addCategoryModal'));
+        bulkAddBtn.addEventListener('click', () => showModal('bulkAddModal'));
+
+        // 初始化
+        renderCategories();
+        renderLinks();
+
+        // 本地存储
+        function saveToLocalStorage() {
+            localStorage.setItem('bookmarkCategories', JSON.stringify(categories));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('bookmarkCategories');
+            if (saved) {
+                categories = JSON.parse(saved);
+                renderCategories();
+                renderLinks();
+            }
+        }
+
+        // 添加自动保存
+        const autoSave = () => {
+            saveToLocalStorage();
+        };
+
+        // 在适当的地方添加自动保存
+        ['handleAddCategory', 'handleDeleteCategory', 'handleEditLink', 'handleDeleteLink', 'handleBulkAdd'].forEach(
+            funcName => {
+                const original = window[funcName];
+                window[funcName] = (...args) => {
+                    original.apply(null, args);
+                    autoSave();
+                };
+            }
+        );
+
+        // 页面加载时加载数据
+        loadFromLocalStorage();
+    </script>
+  </body>
+</html>
